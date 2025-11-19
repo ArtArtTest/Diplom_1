@@ -17,42 +17,48 @@ class TestDatabase:
         buns = db.available_buns()
         assert len(buns) == 3
 
-    @allure.title("Проверка, что имена булочек называются как нужно")
-    def test_available_buns_have_correct_names(self):
-        db = Database()
-        expected_names = {"black bun", "white bun", "red bun"}
-        actual_names = {bun.get_name() for bun in db.available_buns()}
-        assert actual_names == expected_names
-
     @allure.title("Проверка, что возвращается 6 ингредиентов")
     def test_available_ingredients_returns_six_ingredients(self):
         db = Database()
         ingredients = db.available_ingredients()
         assert len(ingredients) == 6
 
-    @allure.title("Проверка, что доступно 3 соуса")
-    def test_database_has_three_sauces(self):
-        db = Database()
-        sauces = [ing for ing in db.available_ingredients() if ing.get_type() == INGREDIENT_TYPE_SAUCE]
-        assert len(sauces) == 3
+    @pytest.mark.parametrize(
+        "index,name,price",
+        [
+            (0, "black bun", 100.0),
+            (1, "white bun", 200.5),
+            (2, "red bun", 0.0),
+        ],
+    )
 
-    @allure.title("Проверка, что доступно 3 начинки")
-    def test_database_has_three_fillings(self):
-        db = Database()
-        fillings = [ing for ing in db.available_ingredients() if ing.get_type() == INGREDIENT_TYPE_FILLING]
-        assert len(fillings) == 3
+    @allure.title("Проверка, что индекс возвращает корректное имя булочки")     
+    def test_buns_parametrization(self, index, name, price):
 
-    @allure.title("Проверка, что имена соусов называются как нужно")
-    def test_sauce_names_are_correct(self):
-        db = Database()
-        sauce_names = {ing.get_name() for ing in db.available_ingredients() if ing.get_type() == INGREDIENT_TYPE_SAUCE}
-        expected = {"hot sauce", "sour cream", "chili sauce"}
-        assert sauce_names == expected
+        database = Database()
+        buns = database.available_buns()
+        bun = buns[index]
 
-    @allure.title("Проверка, что имена начинок называются как нужно")
-    def test_filling_names_are_correct(self):
-        db = Database()
-        filling_names = {ing.get_name() for ing in db.available_ingredients() if ing.get_type() == INGREDIENT_TYPE_FILLING}
-        expected = {"cutlet", "dinosaur", "sausage"}
-        assert filling_names == expected
+        assert bun.name == name
+
+    @pytest.mark.parametrize(
+        "index,ingredient_type,name,price",
+        [
+            (0, INGREDIENT_TYPE_SAUCE, "hot sauce", 100),
+            (1, INGREDIENT_TYPE_SAUCE, "sour cream", 200),
+            (2, INGREDIENT_TYPE_SAUCE, "chili sauce", 300),
+            (3, INGREDIENT_TYPE_FILLING, "cutlet", 100),
+            (4, INGREDIENT_TYPE_FILLING, "dinosaur", 200),
+            (5, INGREDIENT_TYPE_FILLING, "sausage", 300),
+        ],
+    )
+
+    @allure.title("Проверка, что индекс возвращает корректное имя ингридиента")     
+    def test_ingredients_parametrization(self, index,ingredient_type,name,price):
+        database = Database()
+
+        ingredients = database.available_ingredients()
+        ingredient = ingredients[index]
+
+        assert ingredient.name == name
         
